@@ -1,0 +1,111 @@
+.round-button {
+	min-width: 100%;
+	max-width: 100%;
+	position: relative;
+	display: flex;
+	align-items: center;
+	flex-direction: column;
+}
+
+.button-image:active{
+	top: 2px;
+	left: 2px;
+}
+
+.round-button > label{
+	margin-top: 0.3em;
+	color: #dfdfdf;
+	max-width: 200%;
+	text-align: center;
+	display: block;
+	user-select: none;
+	cursor: pointer;
+}
+
+.button-image{
+	position: relative;
+	line-height: 0;
+	width: 100%;
+	border-radius: 50%;
+	
+	border: solid 0.2em #dfdfdf;
+	cursor: pointer;
+	user-select: none;
+	pointer-events: auto;
+}
+
+.small-button > label{
+	display:none
+}
+
+.small-button > .button-image{
+	border: solid 0.1em #dfdfdf;
+}
+
+.button-image::after{
+	content: '';
+	display: block;
+	padding-top: 100%;
+	pointer-events: none;
+}
+
+.button-image > img {
+	position: absolute;
+	top: 15%;
+	left: 15%;
+	width: 70%;
+	height: 70%;
+}
+
+
+
+@media (hover:hover){
+
+	.button-image:hover{
+		border: solid 0.3em #dfdfdf;
+	}
+
+	.round-button[data-tooltip]:not(:active)::before{
+		display: flex;
+		min-width: max-content;
+		pointer-events: none;
+		text-align: start;
+		background-color: #131313a0;
+		content: attr(data-tooltip);
+		color: #dfdfdf;
+		padding: 0.5em 1em;
+	
+		transition: all 0.15s ease-out,
+					opacity 0.15s ease-in;
+	
+		position: absolute;
+		top: calc(50% - 1.5em);
+		opacity: 0;
+	}
+	
+	.to-left-tooltip[data-tooltip]::before{
+		border-radius: 0.3em 1em 1em 0.3em;
+		right: 100%;
+		top: calc(50% - 1.5em);
+	}
+	
+	.to-right-tooltip[data-tooltip]::before{
+		border-radius: 1em 0.3em 0.3em 1em;
+		left: 100%;
+		top: calc(50% - 1.5em);
+	}
+	
+	.round-button[data-tooltip]:hover::before{
+		opacity: 1;
+	}
+	
+	.to-left-tooltip[data-tooltip]:hover::before{
+		right: calc(100% + 1em);
+		top: calc(50% - 1.5em);
+	}
+	
+	.to-right-tooltip[data-tooltip]:hover::before{
+		left: calc(100% + 1em);
+		top: calc(50% - 1.5em);
+	}
+}

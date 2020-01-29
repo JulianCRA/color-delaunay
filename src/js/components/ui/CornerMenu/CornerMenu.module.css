@@ -1,0 +1,68 @@
+.corner-menu{
+	position: relative;
+	width: 100%;
+	display: flex;
+	flex-direction: column;
+}
+
+.from-top{
+	flex-flow: column-reverse;
+}
+
+.from-bottom{
+	flex-flow: column;
+}
+
+.from-top > .button-container {
+	margin-top: 15px;
+}
+
+.from-bottom > .button-container {
+	margin-bottom: 15px;
+}
+
+.button-container{
+	width: 100%;
+	height: 100%;
+	position: relative;
+	display: flex;
+	flex-flow: column;
+	align-content: flex-start;
+	transition: all 0.6s ease-out;
+}
+
+.button-container > *{
+	transform: none;
+	transition: all 0.6s ease-out;
+}
+
+.from-top > .button-container > *{
+	margin-bottom: 10px;
+}
+.from-bottom > .button-container > *{
+	margin-top: 10px;
+}
+
+.from-top > .closed-menu{
+	margin-top: 0;
+}
+
+.from-bottom > .closed-menu{
+	margin-bottom: 0;
+}
+
+.closed-menu > * {
+	transform: scale(0.7);
+	font-size: 0;
+	padding: 0;
+}
+
+.from-top > .closed-menu > *{
+	margin-top: -100%;
+	margin-bottom: 0;
+}
+
+.from-bottom > .closed-menu > *{
+	margin-bottom: -100%;
+	margin-top: 0;
+}

@@ -1,6 +1,6 @@
-//import LegoBoard from './LegoBoard'
+import Delaunator from 'delaunator'
 
-const legoSketch = p => {
+const colorVoronoiSketch = p => {
 
 	let sourceImage
 	
@@ -164,4 +164,4 @@ const legoSketch = p => {
 	}
 }
 
-export default legoSketch
+export default colorVoronoiSketch

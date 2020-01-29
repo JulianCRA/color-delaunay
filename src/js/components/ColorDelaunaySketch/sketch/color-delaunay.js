@@ -3,17 +3,15 @@ import Delaunator from 'delaunator'
 const colorVoronoiSketch = p => {
 
 	let sourceImage
+	let delaunayImage
 	
-	let pixelMap
-	let board
-	let legoifiedImage
-	let brickSize
-
-	let animation
-	let index
-	const maxBricks = 50
-	const minSize = 20
-
+	let points
+	let delaunay
+	const limit = 5000
+	let animation = false
+	let increment = 1
+	let step = 0
+	
 	p.preload = () => {}
 	p.setup = () => {
 		p.createCanvas(p._userNode.clientWidth, p._userNode.clientHeight)
@@ -24,143 +22,100 @@ const colorVoronoiSketch = p => {
 	}
 	p.draw = () => {
 		if(animation)
-			brickByBrick()
+			console.log("ANIM")
 	}
 
 	p.customRedraw = (config) => {
 		console.log(config)
-		// switch(config.action){
-		// 	case "SAVE":
-		// 		save()
-		// 	break
-		// 	case "DISPLAY_SKETCH":
-		// 		loadNewImage(config.link)
-		// 	break
-		// 	case "SHUFFLE":
-		// 		shuffle()
-		// 	break
+		switch(config.action){
+			case "SAVE":
+				save()
+			break
+			case "DISPLAY_SKETCH":
+				loadNewImage(config.link)
+			break
 		// 	case "ANIMATE":
 		// 		animate()
 		// 	break
-		// 	case "LEGOIFY":
-		// 		legoify()
-		// 	break
-		// }
+			case "DELAUNAY":
+				toDelaunay(limit)
+			break
+		}
 	}
 
 	const save = () => {
-		p.saveCanvas(legoifiedImage, 'legoified.png')
-	}
-
-	const animate = () => {
-		p.loop()
-		p.clear()
-		legoifiedImage.clear()
-		index = 0
-		animation = true
-	}
-
-	const shuffle = () => {
-		board.reset()
-		board.fillGrid()
-		legoify()
-	}
-
-	const legoify = () => {
-		p.clear()
-		legoifiedImage.clear()
-		board.bricks.map(
-			brick => drawBrick(legoifiedImage, brick)
-		)
-		displayLegoified()
+		p.saveCanvas(delaunayImage, 'color-delaunay.png')
 	}
 
 	const loadNewImage = source => {
 		sourceImage = p.loadImage( source, displayNewImage)
 	}
 
-	const brickByBrick = () => {
-		const bricksAmount = Math.ceil(board.bricks.length / 100)
-		
-		for(let i = 0; i < bricksAmount; i++){
-			if(index < board.bricks.length)
-				drawBrick(legoifiedImage, board.bricks[index])
-			else{
-				p.noLoop()
-				animation = false
-			}
-			index++
-		}
-		
-		displayLegoified()
-	}
-
 	const displayNewImage = () => {
 		const ratio = Math.min(p.width/sourceImage.width, p.height/sourceImage.height)
-		const newWidth = sourceImage.width * ratio
-		const newHeight = sourceImage.height * ratio
+		const newWidth = Math.floor(sourceImage.width * ratio)
+		const newHeight = Math.floor(sourceImage.height * ratio)
 
-		p.image(sourceImage, p.width * 0.5, p.height * 0.5, newWidth, newHeight)
-
-		brickSize =  Math.min(Math.floor(Math.max(newWidth, newHeight) / maxBricks), minSize)
-		const gridWidth = Math.floor(newWidth / brickSize)
-		const gridHeight = Math.floor(newHeight / brickSize)
-		board = new LegoBoard(gridWidth, gridHeight, sourceImage)
-
-		pixelMap = p.createGraphics(board.width, board.height)
-		pixelMap.image(sourceImage, 0, 0, pixelMap.width, pixelMap.height)
-		pixelMap.loadPixels()
-
-		legoifiedImage = p.createGraphics(gridWidth * brickSize, gridHeight * brickSize)
-		board.bricks.map(
-			brick => drawBrick(legoifiedImage, brick)
-		)
+		delaunayImage = p.createGraphics(newWidth, newHeight)
+		delaunayImage.image(sourceImage, 0, 0, newWidth, newHeight)
+		displayDelaunay()
 	}
 
-	const displayLegoified = () => {
+	const displayDelaunay = () => {
 		p.clear()
 		p.push()
 		p.translate(p.width * 0.5, p.height * 0.5)
-		p.image(legoifiedImage, 0, 0)
+		p.image(delaunayImage, 0, 0)
 		p.pop()
 	}
 
-	const drawBrick = (canvas, brick) => {
-		const color = averageZoneColor(brick)
-		if(!color) return
-
-		canvas.fill(color)
-		canvas.strokeWeight(1)
-		canvas.stroke(0, 0, 0, 100)
-		canvas.rect(brick.x*brickSize, brick.y*brickSize, brick.w*brickSize, brick.h*brickSize)
-
-		canvas.fill(0, 0, 0, 40)
-		canvas.strokeWeight(0.5)
-		for(let i = 0; i < brick.w; i++)
-			for(let j = 0; j < brick.h; j++)
-				canvas.circle((brick.x + i + 0.5) * brickSize, (brick.y + j + 0.5) * brickSize, brickSize * .5)
+	const toDelaunay = amount => {
+		points = []
+		let x, y
+		for(let i = 0; i < amount; i++){
+			x = Math.floor(Math.random() * delaunayImage.width-1)
+			y = Math.floor(Math.random() * delaunayImage.height-1)
+			points.push([x, y])
+		}
+		delaunay = Delaunator.from(points)
+		
+		drawTriangles(delaunayImage)
+		displayDelaunay()
 	}
 
-	const averageZoneColor = ({x, y, w, h}) => {
-		let r = 0
-		let g = 0
-		let b = 0
-		let a = 0
-		const d = p.pixelDensity()
-		let pixpos
-		for(let i = x; i < x+w; i++){
-			for(let j = y; j < y+h; j++){
-				pixpos = (j * pixelMap.width * d + i) * 4 * d
+	const drawTriangles = canvas => {
+		function edgesOfTriangle(triangleIndex) { return [3 * triangleIndex, 3 * triangleIndex + 1, 3 * triangleIndex + 2] }
+
+		function pointsOfTriangle(delaunayInstance, triangleIndex) {
+			return edgesOfTriangle(triangleIndex)
+				.map(edge => delaunayInstance.triangles[edge])
+		}
+
+		function forEachTriangle(pointList, delaunayInstance) {
+			let triangle
+			let pix // pixel at the Centroid of the triangle
+		
+			for (let triangleIndex = 0; triangleIndex < delaunayInstance.triangles.length / 3; triangleIndex++) {
+				triangle = pointsOfTriangle(delaunayInstance, triangleIndex).map(pointIndex => pointList[pointIndex])
 				
-				r += pixelMap.pixels[pixpos+0]
-				g += pixelMap.pixels[pixpos+1]
-				b += pixelMap.pixels[pixpos+2]
-				a += pixelMap.pixels[pixpos+3]
+				let xx = Math.round((triangle[0][0]+triangle[1][0]+triangle[2][0])/3)
+				let yy = Math.round((triangle[0][1]+triangle[1][1]+triangle[2][1])/3)
+				pix = (yy * canvas.width + xx) * 4
+				
+				if(yy==-1) continue
+				canvas.fill(canvas.pixels[pix], canvas.pixels[pix+1], canvas.pixels[pix+2])
+				canvas.stroke(canvas.pixels[pix], canvas.pixels[pix+1], canvas.pixels[pix+2])
+				canvas.triangle(
+					triangle[0][0], triangle[0][1], 
+					triangle[1][0], triangle[1][1], 
+					triangle[2][0], triangle[2][1]
+				)
 			}
 		}
-		if(a===0) return false
-		
-		return [r/(w*h), g/(w*h), b/(w*h)]
+
+		canvas.loadPixels()
+		canvas.clear()
+		forEachTriangle(points, delaunay)
 	}
 }
 

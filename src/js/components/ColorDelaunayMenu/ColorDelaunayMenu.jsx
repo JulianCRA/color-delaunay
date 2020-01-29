@@ -7,9 +7,8 @@ import styles from './ColorDelaunayMenu.module.css'
 
 import animationImage 	from './assets/buttons/animate.svg'
 import downloadImage 	from './assets/buttons/download.svg'
-import legoifyImage 	from './assets/buttons/lego.svg'
+import trianglesImage 	from './assets/buttons/triangles.svg'
 import loadImage 		from './assets/buttons/load.svg'
-import scrambleImage 	from './assets/buttons/scramble.svg'
 
 const ColorDelaunayMenu = ({update}) => {
 	const height =  window.innerHeight || 
@@ -19,10 +18,10 @@ const ColorDelaunayMenu = ({update}) => {
 	const elements = [
 		{
 			type : "button",
-			tooltip : "Save the lego board to a file.",
+			tooltip : "Save the mosaic image to a file.",
 			label : "SAVE",
 			image : downloadImage,
-			small : height < 500,
+			small : height < 400,
 			action : () => update({action : actions._SAVE})
 		},
 		{
@@ -30,31 +29,23 @@ const ColorDelaunayMenu = ({update}) => {
 			tooltip : "Load another image.",
 			label : "LOAD",
 			image : loadImage,
-			small : height < 500,
+			small : height < 400,
 			action : () => update({action : actions._DISPLAY_READER})
-		},
-		{
-			type : "button",
-			tooltip : "Change the disposition of the lego bricks",
-			label : "SHUFFLE",
-			image : scrambleImage,
-			small : height < 500,
-			action : () => update({action : actions._SHUFFLE})
 		},
 		{
 			type : "button",
 			tooltip : "Watch as the triangles are placed progressively.",
 			label : "ANIMATE",
 			image : animationImage,
-			small : height < 500,
+			small : height < 400,
 			action : () => update({action : actions._ANIMATE})
 		},
 		{
 			type : "button",
-			label : "LEGOIFY",
-			image : legoifyImage,
-			small : height < 500,
-			action : () => update({action : actions._LEGOIFY})
+			label : "GO!",
+			image : trianglesImage,
+			small : height < 400,
+			action : () => update({action : actions._DELAUNAY})
 		}
 	]
 	

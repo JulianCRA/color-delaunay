@@ -28,6 +28,7 @@ const legoSketch = p => {
 	}
 
 	p.customRedraw = (config) => {
+		console.log(config)
 		// switch(config.action){
 		// 	case "SAVE":
 		// 		save()

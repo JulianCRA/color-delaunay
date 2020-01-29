@@ -1,6 +1,6 @@
 import React from 'react'
 
-import Legoify from './components/ColorDelaunay'
+import ColorDelaunay from './components/ColorDelaunay'
 
 const App = () => {
 	return (

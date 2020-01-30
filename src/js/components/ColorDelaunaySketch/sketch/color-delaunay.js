@@ -52,7 +52,7 @@ const colorVoronoiSketch = p => {
 	}
 
 	const save = () => {
-		p.saveCanvas(delaunayImage, 'color-delaunay.png')
+		p.saveCanvas(delaunayImage, 'colored-delaunay.png')
 	}
 
 	const loadNewImage = source => {
